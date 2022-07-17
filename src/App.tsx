@@ -1,57 +1,34 @@
-import React from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
-import './App.css';
+import React, { useMemo } from 'react';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import CssBaseline from '@mui/material/CssBaseline';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { Divider, Stack } from '@mui/material';
+import { getDesignTokens }from './theme';
+import { store } from './state/store';
+import TodoForm from './components/TodoForm';
+import TodoList from './components/TodoList';
+import './styles/App.scss';
 
 function App() {
+  store.subscribe(()=>{
+    localStorage.setItem('reduxState', JSON.stringify(store.getState()))
+  });
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+  const theme = useMemo(() => (
+    createTheme(getDesignTokens(prefersDarkMode ? 'dark' : 'light'))
+  ),[prefersDarkMode]);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
-      </header>
-    </div>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Stack
+        className='main-content'
+        divider={<Divider orientation="horizontal" flexItem />}
+        gap={2}
+      >
+        <TodoForm />  
+        <TodoList />
+      </Stack>
+    </ThemeProvider>
   );
 }
 
